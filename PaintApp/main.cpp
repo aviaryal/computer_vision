@@ -86,13 +86,13 @@ void PaintProgram::pencil(MouseButton flag)
 }   
 void PaintProgram::cropImage()
 {   
-    // Need to fix crop recursive.
     // Check if the points are same
     if((inital_pointx - final_pointx)== 0 || (inital_pointy - final_pointy)==0 )
         return;
     cv::Rect myROI(cv::Point(inital_pointx,inital_pointy),cv::Point(final_pointx,final_pointy));
     cv::Mat imageROI = _imageIn(myROI);
-    cv::imshow("imageIn",imageROI);
+    cv::resize(imageROI, _imageIn, cv::Size(imageROI.cols, imageROI.rows));
+    cv::imshow("imageIn",_imageIn);
 
 }
 void PaintProgram::painBucket(int pointx, int pointy)
