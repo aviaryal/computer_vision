@@ -7,6 +7,7 @@
 // configuration parameters
 #define NUM_COMNMAND_LINE_ARGUMENTS 1
 // Define enum for the mouse Flag
+// Left clicked, right click, left release, right release, left double click, mouse move.
 enum MouseButton {LDown,RDown,LUp,RightUp,LDC,MH};
 class PaintProgram
 {
@@ -22,7 +23,7 @@ class PaintProgram
         cv::Mat _imageIn;
         cv::Vec3b eyedropper = cv::Vec3b(255,255,255);
     public:
-        PaintProgram(cv::Mat imageIn, cv::Mat initalImageIn);
+        PaintProgram(cv::Mat imageIn);
         void setInitalXY(int x, int y);
         void setFinalXY(int x, int y);
         void runCommand(MouseButton flag);
@@ -36,7 +37,7 @@ class PaintProgram
         int getTools();
 };
 
-PaintProgram::PaintProgram(cv::Mat imageIn, cv::Mat initalImageIn): _initalImageIn{initalImageIn}, _imageIn{imageIn}
+PaintProgram::PaintProgram(cv::Mat imageIn): _initalImageIn{imageIn.clone()}, _imageIn{imageIn}
 {
     // Constructor for Class
     cv::imshow("imageIn", _imageIn);
@@ -88,6 +89,8 @@ void PaintProgram::cropImage()
 {   
     // Check if the points are same
     if((inital_pointx - final_pointx)== 0 || (inital_pointy - final_pointy)==0 )
+        return;
+    if(final_pointx > _imageIn.rows || final_pointy > _imageIn.cols || final_pointx < 0 || final_pointy < 0) 
         return;
     cv::Rect myROI(cv::Point(inital_pointx,inital_pointy),cv::Point(final_pointx,final_pointy));
     cv::Mat imageROI = _imageIn(myROI);
@@ -192,7 +195,10 @@ void PaintProgram::runCommand(MouseButton flag)
         case 5:
             // only run when mouse double clik
             if(flag==LDC)
-                cv::imshow("imageIn",_initalImageIn);
+            {
+                _imageIn = _initalImageIn.clone();
+                cv::imshow("imageIn",_imageIn);
+            }
             break;
     }
 }
@@ -250,9 +256,9 @@ int main(int argc, char **argv)
     {
         cv::Mat imageIn, initalImageIn;
         imageIn = cv::imread(argv[1], cv::IMREAD_COLOR);
-        initalImageIn = cv::imread(argv[1], cv::IMREAD_COLOR);
+        
         // check for file error
-        if(!imageIn.data || !initalImageIn.data)
+        if(!imageIn.data)
         {
             std::cout << "Error while opening file " << argv[1] << std::endl;
             return 0;
@@ -262,7 +268,7 @@ int main(int argc, char **argv)
         // eyedropper[1] = 255;
         // eyedropper[2] = 255;
         
-        PaintProgram myPaintProgram(imageIn, initalImageIn);
+        PaintProgram myPaintProgram(imageIn);
         
 
         
