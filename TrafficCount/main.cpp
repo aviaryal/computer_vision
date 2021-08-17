@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 
     // create image window
     cv::namedWindow("captureFrame", cv::WINDOW_AUTOSIZE);
-    cv::namedWindow("fgMask", cv::WINDOW_AUTOSIZE);
+    
 
     // set background filtering parameters
     const int bgHistory = 400;
@@ -86,9 +86,9 @@ int main(int argc, char **argv)
         //cv::line(captureFrame, cv::Point(0,350), cv::Point(1920, 350), cv::Scalar(0, 0, 255), 3, cv::LINE_AA);
         
         // upper
-        cv::line(captureFrame,cv::Point(xCordinate,0),cv::Point(xCordinate,350),cv::Scalar(0, 0, 255), 3, cv::LINE_AA);
-        // buttom 
-        cv::line(captureFrame,cv::Point(xCordinate + deltaX,450),cv::Point(xCordinate+deltaX,1980),cv::Scalar(0, 0, 255), 3, cv::LINE_AA);
+        // cv::line(captureFrame,cv::Point(xCordinate,0),cv::Point(xCordinate,350),cv::Scalar(0, 0, 255), 3, cv::LINE_AA);
+        // // buttom 
+        // cv::line(captureFrame,cv::Point(xCordinate + deltaX,450),cv::Point(xCordinate+deltaX,1980),cv::Scalar(0, 0, 255), 3, cv::LINE_AA);
         if(captureSuccess)
         {
             // pre-process the raw image frame
@@ -101,12 +101,12 @@ int main(int argc, char **argv)
             
             pMOG2->apply(grayFrame, fgMask);
             // extract the foreground mask from image
-            double thresh = 254;
+            double thresh = 30;
             double maxval = 255;
             int thresholdType = 0;
             cv::threshold(fgMask,fgMask, thresh, maxval, thresholdType);
 
-            
+            cv::imshow("fgMask",fgMask);
             
             // increment the frame counter
             frameCount++;
@@ -183,7 +183,7 @@ int main(int argc, char **argv)
                 cv::Point midpoint = (topLeftCorner+buttomLeftCorner)/2;
 
                 // cv::line(captureFrame,topLeftCorner,buttomLeftCorner,cv::Scalar(0, 0, 255), 3, cv::LINE_AA);
-                if(midpoint.x > xCordinate && midpoint.x < xCordinate + 30)
+                if(midpoint.x > xCordinate && midpoint.x < xCordinate + 32)
                 {
                     if(midpoint.y < yCordinate){
                         leftBoundVehicle++;
@@ -205,11 +205,7 @@ int main(int argc, char **argv)
                 }
                 // std::cout<<midpoint<<std::endl;
                 cv::rectangle(captureFrame,drawRect,color);
-                // for(int j = 0; j < 4; j++)
-                // {
-                //     cv::line(captureFrame, rectanglePoints[j], rectanglePoints[(j+1) % 4], color);
-                // }
-
+                
             }
             //cv::imshow("imageRectangles",imageRectangles);
 
